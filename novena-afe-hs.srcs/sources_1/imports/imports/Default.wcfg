@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="adc_rx_tb.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="adc_rx_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="27" />
+   <wvobject fp_name="/adc_rx_tb/clk_n" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_n</obj_property>
+      <obj_property name="ObjectShortName">clk_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/data_i_n" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_i_n[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i_n[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/data_q_n" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_q_n[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_q_n[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_i[63:0]</obj_property>
+      <obj_property name="ObjectShortName">adc_i[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_q" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_q[63:0]</obj_property>
+      <obj_property name="ObjectShortName">adc_q[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/oclk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">oclk</obj_property>
+      <obj_property name="ObjectShortName">oclk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/clk_p" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_p</obj_property>
+      <obj_property name="ObjectShortName">clk_p</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/data_i_p" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_i_p[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i_p[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/data_q_p" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_q_p[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_q_p[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/PERIOD" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">PERIOD[15:0]</obj_property>
+      <obj_property name="ObjectShortName">PERIOD[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/data_i_p" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_i_p[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i_p[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/data_i_n" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_i_n[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i_n[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/data_q_p" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_q_p[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_q_p[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/data_q_n" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_q_n[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_q_n[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/clk_p" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_p</obj_property>
+      <obj_property name="ObjectShortName">clk_p</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/clk_n" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_n</obj_property>
+      <obj_property name="ObjectShortName">clk_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_i[63:0]</obj_property>
+      <obj_property name="ObjectShortName">adc_i[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_q" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_q[63:0]</obj_property>
+      <obj_property name="ObjectShortName">adc_q[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/oclk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">oclk</obj_property>
+      <obj_property name="ObjectShortName">oclk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_gclk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_gclk</obj_property>
+      <obj_property name="ObjectShortName">adc_gclk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_bitslip" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_bitslip</obj_property>
+      <obj_property name="ObjectShortName">adc_bitslip</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_pll_locked" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_pll_locked</obj_property>
+      <obj_property name="ObjectShortName">adc_pll_locked</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_bufpll_locked" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_bufpll_locked</obj_property>
+      <obj_property name="ObjectShortName">adc_bufpll_locked</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_clk</obj_property>
+      <obj_property name="ObjectShortName">adc_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/adc_rx_tb/adc_rx/adc_serdesstrobe" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">adc_serdesstrobe</obj_property>
+      <obj_property name="ObjectShortName">adc_serdesstrobe</obj_property>
+   </wvobject>
+</wave_config>

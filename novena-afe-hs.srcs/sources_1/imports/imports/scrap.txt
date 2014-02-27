@@ -1,0 +1,39 @@
+   wire [63:0] 	      adc_i_fifo;
+   wire 	      adc_i_full;
+   wire 	      adc_i_almost_full;
+   wire 	      adc_i_empty;
+   wire 	      adc_i_almost_empty;
+   
+   adc_ddr3_fifo adc_i_highrate_fifo (
+				    .rst(adc_reset), // input rst
+				    .wr_clk(adc_oclk), // input wr_clk
+				    .rd_clk(adc_clk), // input rd_clk
+				    .din(adc_i), // input [63 : 0] din
+				    .wr_en(adc_sample), // input wr_en
+				    .rd_en(), // input rd_en
+				    .dout(adc_i_fifo), // output [63 : 0] dout
+				    .full(adc_i_full), // output full
+				    .almost_full(adc_i_almost_full), // output almost_full
+				    .empty(adc_i_empty), // output empty
+				    .almost_empty(adc_i_almost_empty) 
+				    );
+
+   wire [63:0] 	      adc_q_fifo;
+   wire 	      adc_q_full;
+   wire 	      adc_q_almost_full;
+   wire 	      adc_q_empty;
+   wire 	      adc_q_almost_empty;
+   
+   adc_ddr3_fifo adc_q_highrate_fifo (
+				    .rst(adc_reset), // input rst
+				    .wr_clk(adc_oclk), // input wr_clk
+				    .rd_clk(adc_clk), // input rd_clk
+				    .din(adc_q), // input [63 : 0] din
+				    .wr_en(adc_sample), // input wr_en
+				    .rd_en(), // input rd_en
+				    .dout(adc_q_fifo), // output [63 : 0] dout
+				    .full(adc_q_full), // output full
+				    .almost_full(adc_q_almost_full), // output almost_full
+				    .empty(adc_q_empty), // output empty
+				    .almost_empty(adc_q_almost_empty) 
+				    );
