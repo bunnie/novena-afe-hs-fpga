@@ -34,8 +34,8 @@ module novena_fpga(
 		   input wire CLK2_N,
 		   input wire CLK2_P,
 		   
-//		   input wire DDC_SCL,
-//		   input wire DDC_SDA,
+		   input wire DDC_SCL, // tie to dummy to prevent pull-downage
+		   input wire DDC_SDA,
 		   
 //		   output wire ECSPI3_MISO,
 //		   input wire ECSPI3_MOSI,
@@ -63,8 +63,8 @@ module novena_fpga(
 		   input wire I2C3_SCL,
 		   inout wire I2C3_SDA,
 		   
-//		   input wire SMB_SCL,
-//		   input wire SMB_SDA,
+		   input wire SMB_SCL, // tie to dummy to prevent pull-downage
+		   input wire SMB_SDA,
 		   
 //		   input wire UART4_CTS,
 //		   input wire UART4_RTS,
@@ -167,6 +167,7 @@ module novena_fpga(
    wire 		      ddr3_p3_rd_pulse;
    wire 		      p3_rd_pulse_gate;
    
+   reg 			      bitbucket; // sort of a /dev/null output to prevent optimizing out tie-dows
    
    wire 		      reset;
    wire 		      dll_reset;
@@ -495,7 +496,7 @@ module novena_fpga(
 
 		       // ID / version code
 		       // minor / major
-		       .reg_fc(8'h00), .reg_fd(8'h08), .reg_fe(8'h00), .reg_ff(8'h03)
+		       .reg_fc(8'h00), .reg_fd(8'h09), .reg_fe(8'h00), .reg_ff(8'h03)
 		       );
       
    ////////////////////////////////////
@@ -664,10 +665,11 @@ module novena_fpga(
    // general status register
    // 0    : DDR3 DLL lock
    // 1    : DDR3 calibration done
-   // 15-2 : reads as 0
+   // 2    : bitbucket, used to prevent optimizing out tie-downs
+   // 15-3 : reads as 0 
    reg_ro reg_ro_41004 ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41004),
 			 .bus_d(ro_d), .re(!cs0_r && rw_r),
-			 .reg_d( {ddr3_calib_done, ddr3_dll_locked} ) );
+			 .reg_d( {bitbucket, ddr3_calib_done, ddr3_dll_locked} ) );
 
    /////// ddr p2 write status
    reg_ro reg_ro_41020 ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41020),
@@ -756,7 +758,7 @@ module novena_fpga(
    // FPGA minor version code
    reg_ro reg_ro_41FFC ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41FFC),
 			 .bus_d(ro_d), .re(!cs0_r && rw_r),
-			 .reg_d( 16'h0008 ) );
+			 .reg_d( 16'h0009 ) );
 
    // FPGA major version code
    reg_ro reg_ro_41FFE ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41FFE),
@@ -764,6 +766,11 @@ module novena_fpga(
 			 .reg_d( 16'h0003 ) );
 
    ////////// VERSION LOG (major version 0003) /////////////
+   //////
+   // Minor version 0009, March 10 2014
+   //    Fix I2C pull-down issue. Unused I2C paths are pulling down busses,
+   //    causing top voltage to be 2.7V when it should be 3.3V.
+   //
    //////
    // Minor version 0008, February 22 2014
    //    memory-to-EIM burst path finally doing something reasonable. 
@@ -1226,5 +1233,17 @@ module novena_fpga(
    //////////////
    assign APOPTOSIS = 1'b0; // make apoptosis inactive, tigh high to force reboot on config
    assign ECSPI3_MISO = 1'b0;
+
+   // I2C inputs are defined as inputs to prevent the unused states
+   // from floating and possibly being assigned pull-downs. Could also
+   // be solved by UCF hacking but UCFs are tricky and annoying.
+   reg bitbucket_r;
+   reg bitbucket_r2;
+   always @(posedge bclk_dll) begin
+      // make synchronous to avoid false-path crappiness
+      bitbucket_r <= DDC_SCL | DDC_SDA;
+      bitbucket_r2 <= bitbucket_r | SMB_SCL | SMB_SDA;
+      bitbucket <= bitbucket_r2;
+   end
    
 endmodule
