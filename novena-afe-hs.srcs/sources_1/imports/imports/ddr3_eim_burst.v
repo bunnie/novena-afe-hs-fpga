@@ -78,7 +78,7 @@ module ddr3_eim_burst(
    // issue read commands to the memory interface
    // read address is directly a register
    assign ddr3_rd_cmd = 3'b001;
-   assign ddr3_rd_bl = 6'b111111; // 64-element burst read (x32 bits wide = 256 bytes)
+   assign ddr3_rd_bl = 6'b011111; // 32-element burst read (x32 bits wide = 128 bytes)
 
    reg [1:0] 	 setup_ok; // assert when conditions are right to issue a read
    always @(posedge bclk) begin
@@ -99,7 +99,7 @@ module ddr3_eim_burst(
 	 ddr3_rd_adr[29:0] <= {startpage_s[17:0],12'b0}; // page-aligned address
       end else begin
 	 if( ddr3_rd_cmd_en ) begin // this is active for exactly one cycle
-	    ddr3_rd_adr[29:0] <= ddr3_rd_adr[29:0] + 30'h100; // inc by one burst stride
+	    ddr3_rd_adr[29:0] <= ddr3_rd_adr[29:0] + 30'h80; // inc by one burst stride
 	    // and we totally allow wrap-around, if you're not careful
 	 end else begin
 	    ddr3_rd_adr[29:0] <= ddr3_rd_adr[29:0];

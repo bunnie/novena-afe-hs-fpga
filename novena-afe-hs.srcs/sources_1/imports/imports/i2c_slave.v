@@ -56,6 +56,7 @@ module i2c_slave (
 		  output wire [7:0] reg_4,
 		  output wire [7:0] reg_5,
 		  output wire [7:0] reg_6,
+		  output wire [7:0] reg_7,
 
 		  input wire [7:0]  reg_40, // 40-7F are read-only (from the host perspective)
 		  input wire [7:0]  reg_41,
@@ -463,6 +464,7 @@ module i2c_slave (
    assign reg_4 = I2C_regblock[6'h4];
    assign reg_5 = I2C_regblock[6'h5];
    assign reg_6 = I2C_regblock[6'h6];
+   assign reg_7 = I2C_regblock[6'h7];
 
    always @(posedge clk) begin
       if( (I2C_addr[7:0] == 8'h46) & ((I2C_cstate == I2C_ACK_ADDR) || 

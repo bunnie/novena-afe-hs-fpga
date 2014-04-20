@@ -47,9 +47,9 @@ module adc_rx(
    wire [63:0] 	      adc_q_fast;
 
    always @(posedge oclk) begin
-      // i-channel:   0100_X000  // swaps due to P/N pair swapping for routability
+      // i-channel:   0100_0000  // swaps due to P/N pair swapping for routability
       // q-channel:   1010_1000
-      adc_i <= adc_i_fast ^ 64'h4040_4040_4040_4040; 
+      adc_i <= adc_i_fast ^ 64'h4848_4848_4848_4848; 
       adc_q <= adc_q_fast ^ 64'hA8A8_A8A8_A8A8_A8A8;
    end
 

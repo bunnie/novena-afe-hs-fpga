@@ -114,6 +114,11 @@ module novena_fpga(
 		   input wire F_LVDS_PC,
 		   input wire F_LVDS_NC,
 
+		   input wire F_LVDS_NA,  // channel 0
+		   input wire F_LVDS_PA,
+		   input wire F_LVDS_NB,  // channel 1 (working channel)
+		   input wire F_LVDS_PB,
+
 		   input wire RESETBMCU
 	 );
 
@@ -175,6 +180,9 @@ module novena_fpga(
 
    wire 	      bclk_dll, bclk_div2_dll, bclk_div4_dll, bclk_locked;
    wire 	      bclk_early;
+
+   wire 	      triggerA;
+   wire 	      triggerB;
 
    ////////////////////////////////////
    ///// MASTER RESET
@@ -316,13 +324,64 @@ module novena_fpga(
    wire 	      adc_sample_oclk;
 
    reg [29:0] 	      sample_count;
+
+   reg [2:0] 	      trigA;
+   reg 		      trigA_rising;
+   reg 		      trigA_falling;
+   reg [2:0] 	      trigB;
+   reg 		      trigB_rising;
+   reg 		      trigB_falling;
+   reg 		      master_trigger_pulse;
+
+   reg 		      trig_ena;
+   reg 		      trig_chan;
+   reg 		      trig_edge;
+
+   reg 		      sample_run;
+   
+   reg 		      triggered;
+   
+   reg [7:0] 	      adc_ctl_sync;
+
+   always @(posedge adc_oclkx2) begin // synchronize the trigger inputs
+      adc_ctl_sync[7:0] <= adc_ctl[7:0];
+      
+      trig_ena <= adc_ctl_sync[0];
+      trig_chan <= adc_ctl_sync[1];
+      trig_edge <= adc_ctl_sync[1];
+
+      trigA[2:0] <= {trigA[1:0], triggerA};
+      trigA_rising <= !trigA[2] & trigA[1];
+      trigB_falling <= trigA[2] & !trigA[1];
+      trigB[2:0] <= {trigB[1:0], triggerB};
+      trigB_rising <= !trigB[2] & trigB[1];
+      trigB_falling <= trigB[2] & !trigB[1];
+
+      master_trigger_pulse <= trig_chan ? 
+			       (trig_edge ? trigB_falling : trigB_rising) : 
+			       (trig_edge ? trigA_falling : trigA_rising);
+   end
    
    always @(posedge adc_oclkx2) begin // bring adc_sample into oclk domain
       adc_sample_s[2:0] <= {adc_sample_s[1:0], adc_sample};
+
+      if( !adc_sample_s[2] & adc_sample_s[1] ) begin
+	 triggered <= 1'b0;
+      end else if( sample_run ) begin
+	 triggered <= 1'b1;
+      end else begin
+	 triggered <= triggered;
+      end
+      
+      // if trigger is enabled, rely on master_trigger_pulse, gated with the static adc_sample_s notion
+      // if trigger is disabled, start sampling the moment we see an edge on adc_sample_s
+      sample_run <= trig_ena ? (master_trigger_pulse & adc_sample_s[2] & !triggered) : 
+		     (!adc_sample_s[2] & adc_sample_s[1]);
+      
    end
 
    always @(posedge adc_oclkx2) begin
-      if( !adc_sample_s[2] & adc_sample_s[1] ) begin
+      if( sample_run  ) begin
 	 sample_count <= 30'b0;
       end else if( adc_sample_s[2] && (sample_count < sample_length) ) begin
 	 sample_count <= sample_count + 30'b1;
@@ -368,6 +427,8 @@ module novena_fpga(
    // local state
    reg [4:0] 	      ddr3_burstcnt;
    reg [29:0] 	      ddr3_adc_adr;
+
+   wire [63:0] 	      adc_swizzle;
    
    assign adc_ddr3_cmd_instr = 4'b0000;
    assign adc_ddr3_cmd_byte_addr = ddr3_adc_adr[29:0];
@@ -375,7 +436,13 @@ module novena_fpga(
    assign adc_ddr3_cmd_en = (ddr3_burstcnt == 5'b1_1111);
 
    // i-data on even addresses, aligned on 64-bit boundaries
-   assign adc_ddr3_wr_data[63:0] = ddr3_burstcnt[0] ? adc_q[63:0] : adc_i[63:0];
+   assign adc_swizzle[63:0] = ddr3_burstcnt[0] ? adc_q[63:0] : adc_i[63:0];
+   assign adc_ddr3_wr_data[63:0] = {
+				    adc_swizzle[47:40],adc_swizzle[39:32],
+				    adc_swizzle[63:56],adc_swizzle[55:48],
+				    adc_swizzle[15:8],adc_swizzle[7:0],
+				    adc_swizzle[31:24],adc_swizzle[23:16]
+				    };
    // write whenever sampling is commanded, always write groups of 32
    assign adc_ddr3_wr_en = (adc_sample_oclk || (ddr3_burstcnt != 5'b0));
    assign adc_ddr3_wr_mask = 8'b0; // don't mask any writes
@@ -455,6 +522,7 @@ module novena_fpga(
    wire       eim_mon_adv; // advance the monitor FIFO when this *rises*
    wire [7:0] eim_mon_stat;
    wire [23:0] mon_data;
+   wire [7:0]  adc_ctl;
    
    IOBUF #(.DRIVE(8), .SLEW("SLOW")) IOBUF_sda (.IO(I2C3_SDA), .I(1'b0), .T(!SDA_pd), .O(SDA_int));
    i2c_slave i2c_slave(
@@ -478,6 +546,10 @@ module novena_fpga(
 		       .reg_4(adc_wdata[7:0]),  
 		       .reg_5(adc_wdata[15:8]),
 		       .reg_6({adc_commit,adc_waddr[3:0]}),
+		       .reg_7(adc_ctl[7:0]),
+		       // bit 0: enable trigger-based sampling
+		       // bit 1: select channel for trigger 1 = B, 0 = A
+		       // bit 2: select edge (0 = rising; 1 = falling)
 
 		       // inputs to I2C block (FPGA->CPU) 40-7F
 		       .reg_40(reg_0_test),
@@ -496,7 +568,7 @@ module novena_fpga(
 
 		       // ID / version code
 		       // minor / major
-		       .reg_fc(8'h00), .reg_fd(8'h09), .reg_fe(8'h00), .reg_ff(8'h03)
+		       .reg_fc(8'h00), .reg_fd(8'h0C), .reg_fe(8'h00), .reg_ff(8'h03)
 		       );
       
    ////////////////////////////////////
@@ -758,7 +830,7 @@ module novena_fpga(
    // FPGA minor version code
    reg_ro reg_ro_41FFC ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41FFC),
 			 .bus_d(ro_d), .re(!cs0_r && rw_r),
-			 .reg_d( 16'h0009 ) );
+			 .reg_d( 16'h000C ) );
 
    // FPGA major version code
    reg_ro reg_ro_41FFE ( .clk(bclk_dll), .bus_a(bus_addr_r), .my_a(19'h41FFE),
@@ -766,6 +838,24 @@ module novena_fpga(
 			 .reg_d( 16'h0003 ) );
 
    ////////// VERSION LOG (major version 0003) /////////////
+   //////
+   // Minor version 000C, April 20 2014
+   //    Consumate the proposed swap of LVDSC for LVDS6 via rework on the PCB.
+   //    requires fixing the xor mask in adc_rx to get rid of inversion.
+   //
+   //////
+   // Minor version 000B, April 20 2014
+   //    fix under/overflow issue in EIM burst read path; reduce DDR3 read data
+   //    request length from 64 elements to 32 elements. Could probably have done
+   //    something like a reduction to 63 elements and gotten away with it, but
+   //    it works fine with 32 because the DDR3 read is so much faster than
+   //    the EIM readout
+   //
+   //////
+   // Minor version 000A, April 18 2014
+   //    Add trigger control options, I2C register 0x7 bits 2-0 now select
+   //    channel, edge, and trigger enable modes
+   //
    //////
    // Minor version 0009, March 10 2014
    //    Fix I2C pull-down issue. Unused I2C paths are pulling down busses,
@@ -1171,6 +1261,8 @@ module novena_fpga(
    //////////////
    IBUFGDS clkibufgds( .I(CLK2_P), .IB(CLK2_N), .O(clk) );
 
+   IBUFDS trigAds( .I(F_LVDS_PA), .IB(F_LVDS_NA), .O(triggerA) );
+   IBUFDS trigBds( .I(F_LVDS_PB), .IB(F_LVDS_NB), .O(triggerB) );
    
    reg [15:0]		      eim_d_t;
 //   assign eim_d_t = EIM_OE | !EIM_LBA;
