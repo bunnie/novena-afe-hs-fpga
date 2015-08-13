@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="8">
+	<Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc6slx45csg324-3" LaunchPart="xc6slx45csg324-3" ConstrsSet="constrs_1" Description="PlanAhead Defaults (XST defaults with hierarchy)" State="current" Dir="$PRUNDIR/synth_1" LaunchTime="1398002731">
+		<File Type="XST-NGC" Name="novena_fpga.ngc"/>
+		<File Type="RUN-STRAT" Name="$PDATADIR/runs/synth_1/synth_1.psg"/>
+		<File Type="XST-SRP" Name="novena_fpga.srp"/>
+		<File Type="PA-XST" Name="novena_fpga.xst"/>
+		<File Type="RUN-SRCS" Name="$PDATADIR/runs/synth_1/sources.xml"/>
+		<File Type="PA-XSTPRJ" Name="novena_fpga.prj"/>
+		<File Type="RUN-CONSTRS" Name="$PDATADIR/runs/synth_1/constrs_in.xml"/>
+	</Run>
+	<Run Id="impl_1" Type="Ft2:EntireDesign" SynthRun="synth_1" Part="xc6slx45csg324-3" LaunchPart="xc6slx45csg324-3" ConstrsSet="constrs_1" Description="ISE Defaults, including packing registers in IOs off" State="current" Dir="$PRUNDIR/impl_1" LaunchTime="1398002784">
+		<File Type="PA-EDIF" Name="novena_fpga.edf"/>
+		<File Type="MAP-PSR" Name="novena_fpga.psr"/>
+		<File Type="PA-UCF" Name="novena_fpga.ucf"/>
+		<File Type="PAR-NCD" Name="novena_fpga_routed.ncd"/>
+		<File Type="PAR-PAD" Name="novena_fpga_routed_pad.txt"/>
+		<File Type="PAR-PAR" Name="novena_fpga_routed.par"/>
+		<File Type="PAR-UNR" Name="novena_fpga_routed.unroutes"/>
+		<File Type="BG-BIT" Name="novena_fpga.bit"/>
+		<File Type="BG-DRC" Name="novena_fpga.drc"/>
+		<File Type="PA-CONSTRSDIR" Name=".constrs"/>
+		<File Type="BG-BGN" Name="novena_fpga.bgn"/>
+		<File Type="TRCE-TWR" Name="novena_fpga.twr"/>
+		<File Type="TRCE-TWX" Name="novena_fpga.twx"/>
+		<File Type="XDL-XDL" Name="novena_fpga_routed.xdl"/>
+		<File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+		<File Type="WBT-LOG" Name="webtalk.log"/>
+		<File Type="RUN-CONSTRS" Name="$PDATADIR/runs/impl_1/constrs_in.xml"/>
+		<File Type="RUN-STRAT" Name="$PDATADIR/runs/impl_1/impl_1.psg"/>
+		<File Type="NGDB-NGD" Name="novena_fpga.ngd"/>
+		<File Type="NGDB-BLD" Name="novena_fpga.bld"/>
+		<File Type="MAP-NCD" Name="novena_fpga.ncd"/>
+		<File Type="MAP-PCF" Name="novena_fpga.pcf"/>
+		<File Type="MAP-MRP" Name="novena_fpga.mrp"/>
+		<File Type="MAP-MAP" Name="novena_fpga.map"/>
+	</Run>
+</Runs>
+
